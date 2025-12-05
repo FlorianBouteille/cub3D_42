@@ -17,6 +17,7 @@ MAGENTA = \033[35m
 #                 🔧 VARIABLES                    #
 # ════════════════════════════════════════════════ #
 NAME = Cub3D
+NAME_BONUS = Cub3D_bonus
 
 # Libft
 LIBFT_DIR = libft
@@ -24,7 +25,9 @@ LIBFT_A = $(LIBFT_DIR)/libft.a
 
 # Répertoires
 SRC_DIR = src
+SRC_DIR_BONUS = src_bonus
 OBJ_DIR = obj
+OBJ_DIR_BONUS = obj_bonus
 INCLUDE_DIR = includes
 LIBS = -lreadline
 MLX_DIR = ./minilibx-linux
@@ -41,6 +44,9 @@ SRC_FILES = $(shell find $(SRC_DIR) -name "*.c")
 OBJ_FILES = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC_FILES))
 TOTAL = $(words $(SRC_FILES))
 
+SRC_FILES_BONUS = $(shell find $(SRC_DIR_BONUS) -name "*.c")
+OBJ_FILES_BONUS = $(patsubst $(SRC_DIR_BONUS)/%.c, $(OBJ_DIR_BONUS)/%.o, $(SRC_FILES_BONUS))
+TOTAL_BONUS = $(words $(SRC_FILES_BONUS))
 # Log
 LOG = logs
 TMP_LOG = .tmp_log
@@ -88,6 +94,49 @@ $(OBJ_DIR):
 $(MLX_DIR)/libmlx.a:
 	$(MAKE) -C $(MLX_DIR)
 # ════════════════════════════════════════════════ #
+#                 📚 BONUS RULE                    #
+# ════════════════════════════════════════════════ #
+
+bonus: $(MLX_DIR)/libmlx.a $(NAME_BONUS)
+
+$(NAME_BONUS): $(LIBFT_A) $(OBJ_FILES_BONUS)
+	@$(CC) $(CFLAGS) $(OBJ_FILES_BONUS) $(LIBFT_A) $(MLX_LIB) $(MATH_LIB) -o $@
+	@printf "\r["
+	@for i in $(shell seq 1 30); do printf "$(CYAN)▮$(RESET)"; done
+	@printf "] 100%% - $(GREEN)✅ [OK]$(GREEN) Executable created: $(CYAN)$@ $(CYAN)🚀✔️ $(RESET)\n"
+	@echo "🚀$(GREEN) $(NAME_BONUS) ready!$(RESET)"
+
+# ══ Compilation avec barre de progression stylisée ══ #
+define PROGRESS_BAR
+BAR_WIDTH=30 ; \
+PCT=$$(expr 100 \* $(1) / $(TOTAL_BONUS)) ; \
+FILLED=$$(expr $(1) \* $$BAR_WIDTH / $(TOTAL_BONUS)) ; \
+EMPTY=$$(expr $$BAR_WIDTH - $$FILLED) ; \
+BAR=$$(printf "%0.s$(CYAN)▮$(RESET)" $$(seq 1 $$FILLED)) ; \
+BAR=$$BAR$$(printf "%0.s$(BLUE)▯$(RESET)" $$(seq 1 $$EMPTY)) ; \
+printf "\r[$$BAR] $$PCT%% - Compiling $(YELLOW)$(<F)$(RESET) ... "
+endef
+
+INDEX = 0
+
+$(OBJ_DIR_BONUS)/%.o: $(SRC_DIR_BONUS)/%.c | $(OBJ_DIR_BONUS)
+	@mkdir -p $(dir $@)
+	@$(eval INDEX := $(shell expr $(INDEX) + 1))
+	@$(call PROGRESS_BAR,$(INDEX))
+	@$(CC) $(CFLAGS) -c $< -o $@ 2> .tmp_log \
+	&& printf "$(GREEN)✔️ $(RESET)" \
+	|| (mkdir -p $(LOG) && cat .tmp_log >> $(LOG)/compile_errors.log && printf "$(RED)❌$(RESET)\n" && echo "$(RED)[!] Compilation failed for:$(RESET) $(<F)" && exit 1)
+	@rm -f .tmp_log
+
+
+$(OBJ_DIR_BONUS):
+	@mkdir -p $@
+
+
+
+
+
+# ════════════════════════════════════════════════ #
 #                 📚 LIBFT RULE                   #
 # ════════════════════════════════════════════════ #
 $(LIBFT_A):
@@ -104,13 +153,13 @@ clean:
 	@printf "$(BROWN)🧹 Cleaning project...\n$(RESET)"
 	@printf "$(YELLOW)🗑️  Removed object directory   $(WHITE)➤ $(GRAY)$(OBJ_DIR) $(NAME)$(RESET)\n"
 	@printf "$(YELLOW)🗑️  Removed Lib obj directory  $(WHITE)➤ $(GRAY)obj libft.a$(RESET)\n"
-	@rm -rf $(TEST_OBJ_DIR)
-	@rm -f $(NAME_TEST)
+	@rm -rf $(OBJ_DIR_BONUS)
 
 fclean: clean
 	@$(MAKE) -s -C $(LIBFT_DIR) fclean
 	@$(MAKE) -s -C $(MLX_DIR) clean
 	@rm -f $(NAME)
+	@rm -f $(NAME_BONUS)
 	@printf "$(YELLOW)🗑️  Removed executable         $(WHITE)➤ $(GRAY)$(NAME)$(RESET)\n"
 	@printf "$(GREEN)✨ Full cleanup done!$(RESET)\n"
 
@@ -178,4 +227,4 @@ help:
 	@echo "$(CYAN)═══════════════════════════════════════════════════════$(RESET)"
 
 
-.PHONY: all clean fclean re log norm help
+.PHONY: all clean fclean re log norm help bonus

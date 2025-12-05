@@ -3,43 +3,53 @@
 /*                                                        :::      ::::::::   */
 /*   draw_frame.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fbouteil <fbouteil@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mhanarte <mhanarte@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 14:49:42 by fbouteil          #+#    #+#             */
-/*   Updated: 2025/07/10 14:04:55 by fbouteil         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:13:21 by mhanarte         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
+typedef struct s_vert
+{
+	int		i;
+	int		len;
+	int		diff;
+	int		diff_len;
+	int		color;
+	char	*dst;
+}			t_vert;
+
 void	draw_vertical(t_mapinfo *info, int index)
 {
-	int	i;
-	int	len;
-	int	diff;
-	int diff_len;
-	int	color;
+	t_vert	*vert;
 
-	len = info->height / info->ray_info[index].vector_len;
-	i = 0;
-	diff = (info->height - len) / 2;
-	diff_len = diff + len;
-	while (i < info->height)
+	vert = malloc(sizeof(t_vert));
+	vert->len = info->height / info->ray_info[index].vector_len;
+	vert->i = 0;
+	vert->diff = (info->height - vert->len) / 2;
+	vert->diff_len = vert->diff + vert->len;
+	vert->dst = info->frame.addr + index * (info->frame.bits_per_pixel / 8);
+	while (vert->i < info->height)
 	{
-		if (i < diff)
-		color = info->ceiling_color_int;
-		else if (i > diff_len)
-		color = info->floor_color_int;
+		if (vert->i < vert->diff)
+			vert->color = info->ceiling_color_int;
+		else if (vert->i > vert->diff_len)
+			vert->color = info->floor_color_int;
 		else
-		color = get_pixel(info, i, index, len);
-		my_pixel_put(&info->frame, index, i, color);
-		i++;
+			vert->color = get_pixel(info, vert->i, index, vert->len);
+		*(unsigned int *)(vert->dst + vert->i
+				* info->frame.line_length) = vert->color;
+		vert->i++;
 	}
+	free(vert);
 }
 
 void	draw_frame(t_mapinfo *info)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < info->width)

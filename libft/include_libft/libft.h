@@ -6,7 +6,7 @@
 /*   By: fbouteil <fbouteil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 15:05:53 by mhanarte          #+#    #+#             */
-/*   Updated: 2025/07/09 14:50:32 by fbouteil         ###   ########.fr       */
+/*   Updated: 2025/08/19 11:46:14 by fbouteil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,6 @@ int					ft_lstsize(t_list *lst);
 int					ft_strcmp(const char *s1, const char *s2);
 char				*get_next_line(int fd);
 void				ft_free_tab(char **args);
-float 				ft_min(float a, float b);
-float 				ft_max(float a, float b);
+float				ft_min(float a, float b);
+float				ft_max(float a, float b);
 #endif

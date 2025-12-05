@@ -1,0 +1,106 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   check_map.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fbouteil <fbouteil@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/02 13:11:14 by fbouteil          #+#    #+#             */
+/*   Updated: 2025/08/25 16:32:34 by fbouteil         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "cub3D.h"
+
+int	count_lines(char *file)
+{
+	int		i;
+	int		fd;
+	char	*line;
+
+	i = 1;
+	fd = open(file, O_RDONLY);
+	if (fd < 0)
+		return (-1);
+	line = get_next_line(fd);
+	if (!line)
+		return (0);
+	while (line)
+	{
+		free(line);
+		line = get_next_line(fd);
+		i++;
+	}
+	close(fd);
+	return (i);
+}
+
+int	get_map_width(char **map)
+{
+	int	max_len;
+	int	i;
+
+	max_len = 0;
+	i = 0;
+	while (map[i])
+	{
+		if (ft_strlen(map[i]) > max_len)
+			max_len = ft_strlen(map[i]);
+		i++;
+	}
+	return (max_len);
+}
+
+int	get_map_height(char **map)
+{
+	int	i;
+
+	i = 0;
+	while (map[i])
+		i++;
+	return (i);
+}
+
+void	check_characters(t_mapinfo *info)
+{
+	int	i;
+	int	j;
+	int	count_players;
+
+	i = 0;
+	count_players = 0;
+	while (info->map[i])
+	{
+		j = 0;
+		while (info->map[i][j])
+		{
+			if (!ft_strchr("01 DNSWE\n", info->map[i][j]))
+				free_north_and_exit(info, "Error\nWrond character found");
+			if (ft_strchr("NSEW", info->map[i][j]))
+				count_players++;
+			if (info->map[i][j] == 'D')
+				add_door(info, i, j);
+			j++;
+		}
+		i++;
+	}
+	if (count_players != 1)
+		free_north_and_exit(info, "Error\nWrong number of players");
+}
+
+void	check_map(t_mapinfo *info)
+{
+	if (!(info->map))
+	{
+		if (info->north)
+			free_texture(info, info->north);
+		exit_clean("Error\nNo map found !", info, NULL);
+	}
+	check_characters(info);
+	if (!check_walls(info->map, info))
+	{
+		if (info->north)
+			free_texture(info, info->north);
+		exit_clean("Error\nMap must be closed by walls", info, NULL);
+	}
+}

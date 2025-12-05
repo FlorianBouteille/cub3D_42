@@ -6,7 +6,7 @@
 /*   By: fbouteil <fbouteil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 16:14:34 by fbouteil          #+#    #+#             */
-/*   Updated: 2025/07/07 12:33:13 by fbouteil         ###   ########.fr       */
+/*   Updated: 2025/08/19 15:28:17 by fbouteil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ int	handle_keyup(int keycode, t_mapinfo *info)
 		info->look_right = 0;
 	return (0);
 }
+
 int	handle_keydown(int keycode, t_mapinfo *info)
 {
 	if (keycode == 119)

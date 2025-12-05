@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fbouteil <fbouteil@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/19 14:07:35 by fbouteil          #+#    #+#             */
+/*   Updated: 2025/08/25 15:11:24 by fbouteil         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub3D.h"
 
 int	check_extension(char *filename)
@@ -16,25 +28,21 @@ int	main(int argc, char **argv)
 	t_mapinfo	*info;
 
 	if (argc != 2 || check_extension(argv[1]) != 0)
-		return (ft_printf("Usage : ./cub3D map.cub\n", NULL, 2));
+		return (ft_printf("Error\nUsage : ./cub3D map.cub\n", NULL, 2));
 	parsed = parse_map(argv[1]);
 	if (!parsed)
-		return (printf("Error reading the file\n"), 1);
+		return (printf("Error\nCouldn't read file\n"), 1);
 	info = get_mapinfo(parsed);
 	ft_free_tab(parsed);
-	// print_mapinfo(info);
 	check_mapinfo(info);
-	info->data = init_data();
+	info->data = init_data(info);
 	load_img(info);
-	info->wall = get_wall_info(info->map);
 	init_img_buffer(info, &info->minimap, info->tiles_x * info->map_scale,
 		info->tiles_y * info->map_scale);
-	init_img_buffer(info, &info->frame, 2560, 1344);
-	// print_wallinfo(info->wall);
+	init_img_buffer(info, &info->frame, info->width, info->height);
 	hook_handler(info);
 	draw_minimap(info, 0);
 	draw_frame(info);
-	draw_minimap(info, 1);
 	loop(info);
 	free_mapinfo(info);
 	return (0);

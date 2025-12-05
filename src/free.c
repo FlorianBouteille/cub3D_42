@@ -6,7 +6,7 @@
 /*   By: fbouteil <fbouteil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 16:50:43 by mhanarte          #+#    #+#             */
-/*   Updated: 2025/07/10 16:35:33 by fbouteil         ###   ########.fr       */
+/*   Updated: 2025/08/19 14:05:43 by fbouteil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	ft_free_int_tab(int **tab)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (tab[i][0] != -1 && tab[i][1] != -1)

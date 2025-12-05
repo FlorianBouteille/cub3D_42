@@ -6,7 +6,7 @@
 /*   By: fbouteil <fbouteil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 14:13:09 by fbouteil          #+#    #+#             */
-/*   Updated: 2025/07/09 18:09:42 by fbouteil         ###   ########.fr       */
+/*   Updated: 2025/08/21 11:36:56 by fbouteil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,25 +27,27 @@ int	is_in_map(int x, int y, t_mapinfo *info)
 void	move_player(t_mapinfo *info, float delta_y, float delta_x)
 {
 	if (is_in_map(info->player_x_mini, info->player_y_mini + delta_y, info))
-		info->player_y_mini += info->player_speed * delta_y;
+		info->player_y_mini += (info->player_speed * delta_y) / 2;
 	if (is_in_map(info->player_x_mini + delta_x, info->player_y_mini, info))
-		info->player_x_mini += info->player_speed * delta_x;
+		info->player_x_mini += (info->player_speed * delta_x) / 2;
 }
+
 void	turn_player(t_mapinfo *info, int rotation)
 {
 	if (rotation)
-		info->player_direction -= 0.08;
+		info->player_direction -= 0.06;
 	else
-		info->player_direction += 0.08;
+		info->player_direction += 0.06;
 	if (info->player_direction > 2.0 * PI)
 		info->player_direction = 0;
 	else if (info->player_direction <= 0)
 		info->player_direction = 2.0 * PI;
 }
+
 int	update(t_mapinfo *info)
 {
-	float dirx;
-	float diry;
+	float	dirx;
+	float	diry;
 
 	dirx = cos(info->player_direction);
 	diry = sin(info->player_direction);
@@ -62,6 +64,6 @@ int	update(t_mapinfo *info)
 	if (info->look_left)
 		turn_player(info, 1);
 	draw_frame(info);
-	draw_minimap(info, 1);
+	draw_minimap(info, 0);
 	return (1);
 }

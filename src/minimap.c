@@ -12,6 +12,15 @@
 
 #include "cub3D.h"
 
+static void	minimap_pixel_put(t_img_buffer *img_buffer, int x, int y, int color)
+{
+	char	*dst;
+
+	dst = img_buffer->addr + (y * img_buffer->line_length + x
+			* (img_buffer->bits_per_pixel / 8));
+	*(unsigned int *)dst = color;
+}
+
 void	draw_square(t_mapinfo *info, int x, int y, int color)
 {
 	int	i;
@@ -23,19 +32,26 @@ void	draw_square(t_mapinfo *info, int x, int y, int color)
 		j = 0;
 		while (j < info->map_scale)
 		{
-			my_pixel_put(&info->minimap, y + j, x + i,
-				color);
+			minimap_pixel_put(&info->minimap, y + j, x + i, color);
 			j++;
 		}
 		i++;
 	}
 }
 
+void	display_map(t_mapinfo *info, int display)
+{
+	draw_vectors(info, info->width, PI / 3);
+	if (display)
+		mlx_put_image_to_window(info->data->mlx, info->data->win,
+			info->minimap.img, 0, 0);
+}
+
 void	draw_minimap(t_mapinfo *info, int display)
 {
-	int color;
-	int i;
-	int j;
+	int	color;
+	int	i;
+	int	j;
 
 	i = 0;
 	while (info->map[i])
@@ -50,13 +66,11 @@ void	draw_minimap(t_mapinfo *info, int display)
 			else
 				color = 0x000000;
 			draw_square(info, info->map_scale * i, info->map_scale * j, color);
-			draw_square(info, info->player_y_mini - info->map_scale / 2, info->player_x_mini - info->map_scale /2,
-				0xFF0000);
+			draw_square(info, info->player_y_mini - info->map_scale / 2,
+				info->player_x_mini - info->map_scale / 2, 0xFF0000);
 			j++;
 		}
 		i++;
 	}
-	draw_vectors(info, info->width, PI / 3);
-	if (display)
-		mlx_put_image_to_window(info->data->mlx, info->data->win, info->minimap.img, 0, 0);
+	display_map(info, display);
 }

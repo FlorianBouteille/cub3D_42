@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   check_walls.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhanarte <mhanarte@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fbouteil <fbouteil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 14:43:38 by fbouteil          #+#    #+#             */
-/*   Updated: 2025/07/04 14:37:36 by mhanarte         ###   ########.fr       */
+/*   Updated: 2025/08/25 11:30:13 by fbouteil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-int	check_from_pos(int x, int y, char **map)
+int	check_for_x(int x, int y, char **map)
 {
 	int	i;
 
@@ -34,6 +34,13 @@ int	check_from_pos(int x, int y, char **map)
 			break ;
 		i++;
 	}
+	return (1);
+}
+
+int	check_for_y(int x, int y, char **map)
+{
+	int	i;
+
 	i = 0;
 	while (map[x + i][y])
 	{
@@ -54,6 +61,14 @@ int	check_from_pos(int x, int y, char **map)
 	}
 	return (1);
 }
+
+int	check_from_pos(int x, int y, char **map)
+{
+	if (check_for_x(x, y, map) && check_for_y(x, y, map))
+		return (1);
+	return (0);
+}
+
 void	set_player_direction(t_mapinfo *info, char c)
 {
 	if (c == 'N')
@@ -80,12 +95,12 @@ int	check_walls(char **map, t_mapinfo *info)
 			if (ft_strchr("NSEW0", map[i][j]))
 			{
 				if (!check_from_pos(i, j, map))
-					return (printf("at pos [%i][%i]", i, j), 0);
+					return (0);
 				if (ft_strchr("NSEW", map[i][j]))
 				{
 					set_player_direction(info, map[i][j]);
-					info->player_x_mini = j * info->map_scale;
-					info->player_y_mini = i * info->map_scale;
+					info->player_x_mini = j * info->map_scale + info->ms;
+					info->player_y_mini = i * info->map_scale + info->ms;
 				}
 			}
 			j++;
